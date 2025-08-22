@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Flask Redis App{% endblock %}
+
+{% block content %}
+    <h2>Kirim Pesan</h2>
+    <form method="POST">
+        <input type="text" name="message" placeholder="Ketik pesan..." required>
+        <button type="submit">Kirim</button>
+    </form>
+
+    <h2>Pesan Terbaru:</h2>
+    <ul>
+        {% for msg in messages %}
+            <li>{{ msg }}</li>
+        {% else %}
+            <li><i>Belum ada pesan</i></li>
+        {% endfor %}
+    </ul>
+{% endblock %}
