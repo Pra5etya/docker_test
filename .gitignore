@@ -2,4 +2,7 @@
 win_env
 
 # app
-app/__pychace__
+app/__pycache__
+
+# routes
+app/routes/__pycache__
