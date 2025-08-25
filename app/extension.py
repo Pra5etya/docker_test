@@ -7,8 +7,8 @@ class RedisClient:
 
     def init_app(self, app):
         self.client = redis.Redis(
-            host="redis",  # nama service di docker-compose
-            port=6379,
+            host="redis",   # nama service di docker-compose
+            port=6379,      # port service
             decode_responses=True
         )
 
