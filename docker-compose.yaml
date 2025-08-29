@@ -1,23 +1,32 @@
-version: "3.9"
-
 services:
+  # Aplikasi Flask
   web:
     build: .
     container_name: flask_app
-    ports:
-      - "5000:5000"
+    # ❌ Tidak perlu expose port langsung ke host
+    # karena akses diarahkan lewat Traefik
     depends_on:
       redis:
         condition: service_healthy   # pastikan redis healthy dulu
     environment:
       - FLASK_ENV=development
     restart: unless-stopped
+    labels:
+    # Mengaktifkan Traefik pada service ini
+    - "traefik.enable=true"
 
+    # Route berdasarkan domain/host  (jika belum ada domain sebaiknya gunakan `localhost` -> mengarah ke ip local)
+    - "traefik.http.routers.flask_app.rule=Host(`localhost`)"
+
+    # arahkan ke port internal Flask
+    - "traefik.http.services.flask_app.loadbalancer.server.port=5000"
+
+ # Redis
   redis:
     image: redis:6-alpine
     container_name: redis_server
     ports:
-      - "6379:6379"
+      - "6379:6379"   # Redis bisa diakses langsung dari luar docker (opsional)
     volumes:
       - redis_data:/data
     healthcheck:
@@ -25,6 +34,34 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
+    restart: unless-stopped
+
+  # RedisInsight (GUI untuk Redis)
+  redisinsight:
+    image: redis/redisinsight:2.42
+    container_name: redis_insight
+    ports:
+      - "5540:5540"   # akses GUI di http://localhost:5540
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.redisinsight.rule=Host(`redis.localhost`)"    # akses RedisInsight via http://redis.localhost
+      - "traefik.http.services.redisinsight.loadbalancer.server.port=5540"
+
+  # Traefik reverse proxy
+  traefik:
+    image: traefik:v2.11
+    container_name: traefik_proxy
+    ports:
+      - "80:80"       # HTTP
+      - "443:443"     # HTTPS
+      - "8080:8080"   # Traefik dashboard
+    command:
+      - "--api.dashboard=true"                            # aktifkan dashboard monitoring Traefik
+      - "--providers.docker=true"                         # biarkan Traefik membaca label dari docker-compose
+      - "--providers.docker.exposedbydefault=false"       # default service tidak langsung expose kecuali diberi label
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     restart: unless-stopped
 
 volumes:
