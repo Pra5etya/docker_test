@@ -1,5 +1,4 @@
 import redis
-from flask import current_app
 
 class RedisClient:
     def __init__(self):
@@ -8,7 +7,7 @@ class RedisClient:
     def init_app(self, app):
         self.client = redis.Redis(
             host="redis",   # nama service di docker-compose
-            port=6379,      # port service
+            port=6379,
             decode_responses=True
         )
 

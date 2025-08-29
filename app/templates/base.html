@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}Flask Redis App{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
@@ -10,9 +9,11 @@
         <h1>Flask + Redis</h1>
         <nav><a href="/">Home</a></nav>
     </header>
+
     <main>
         {% block content %}{% endblock %}
     </main>
+    
     <footer><p>&copy; 2025 Flask Redis App</p></footer>
 </body>
 </html>

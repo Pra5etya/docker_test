@@ -1,15 +1,18 @@
 {% extends "base.html" %}
 
-{% block title %}Home - Flask Redis App{% endblock %}
+{% block title %}Home{% endblock %}
 
 {% block content %}
-    <h2>Kirim Pesan</h2>
+    <h2>Halo, {{ user }}</h2>
+    <a href="{{ url_for('main.logout') }}">Logout</a>
+
+    <h3>Kirim Pesan</h3>
     <form method="POST">
         <input type="text" name="message" placeholder="Ketik pesan..." required>
         <button type="submit">Kirim</button>
     </form>
 
-    <h2>Pesan Terbaru:</h2>
+    <h3>Pesan Terbaru:</h3>
     <ul>
         {% for msg in messages %}
             <li>{{ msg }}</li>
